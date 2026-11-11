@@ -1,0 +1,55 @@
+org: luisnieva
+service: ms-auth
+
+provider:
+  name: aws
+  runtime: python3.12
+  timeout: 30
+  iam:
+    role: arn:aws:iam::${aws:accountId}:role/LabRole
+
+functions:
+  login:
+    name: LoginUsuario
+    handler: login_usuario.lambda_handler
+    events:
+      - http:
+          path: /auth/login
+          method: post
+          cors: true
+          integration: lambda
+  crear_usuario:
+    name: CrearUsuario
+    handler: crear_usuario.lambda_handler
+  validar_token:
+    name: ValidarTokenAcceso
+    handler: validar_token.lambda_handler
+
+resources:
+  Resources:
+    TablaUsuarios:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: t_usuarios
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: usuario_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+          - AttributeName: usuario_id
+            KeyType: RANGE
+    TablaTokens:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: t_tokens_acceso
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
