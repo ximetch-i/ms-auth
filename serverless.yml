@@ -21,6 +21,12 @@ functions:
   crear_usuario:
     name: CrearUsuario
     handler: crear_usuario.lambda_handler
+    events:
+      - http:
+          path: /auth/crear-usuario
+          method: post
+          cors: true
+          integration: lambda
   validar_token:
     name: ValidarTokenAcceso
     handler: validar_token.lambda_handler
