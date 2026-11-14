@@ -9,19 +9,15 @@ provider:
     role: arn:aws:iam::${aws:accountId}:role/LabRole
 
 functions:
-  login:
-    name: LoginUsuario
-    handler: login_usuario.lambda_handler
+  auth:
+    name: Auth
+    handler: auth.lambda_handler
     events:
       - http:
           path: /auth/login
           method: post
           cors: true
           integration: lambda
-  crear_usuario:
-    name: CrearUsuario
-    handler: crear_usuario.lambda_handler
-    events:
       - http:
           path: /auth/crear-usuario
           method: post
