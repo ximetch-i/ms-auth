@@ -23,9 +23,6 @@ functions:
           method: post
           cors: true
           integration: lambda
-  validar_token:
-    name: ValidarTokenAcceso
-    handler: validar_token.lambda_handler
 
 resources:
   Resources:

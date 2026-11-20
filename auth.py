@@ -48,12 +48,11 @@ def crear_usuario(event, context):
     token = headers.get('authorization')
     if not token:
         return NO_AUTORIZADO
-    r = boto3.client('lambda').invoke(FunctionName='ValidarTokenAcceso',
-                                      InvocationType='RequestResponse',
-                                      Payload=json.dumps({'token': token}))
-    sesion = json.loads(r['Payload'].read())
-    if sesion.get('statusCode') != 200:
+    # Token leido directo de DynamoDB (sin invocar otra Lambda)
+    item = boto3.resource('dynamodb').Table('t_tokens_acceso').get_item(Key={'token': token}).get('Item')
+    if not item or datetime.now().strftime('%Y-%m-%d %H:%M:%S') > item['expires']:
         return NO_AUTORIZADO
+    sesion = {'tenant_id': item['tenant_id'], 'usuario_id': item['usuario_id'], 'rol': item['rol']}
     if sesion['rol'] != 'ADMIN':
         return {'statusCode': 403, 'mensaje': 'Solo un ADMIN puede crear usuarios'}
     # El usuario se crea siempre en el tenant del token
