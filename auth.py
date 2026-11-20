@@ -48,7 +48,6 @@ def crear_usuario(event, context):
     token = headers.get('authorization')
     if not token:
         return NO_AUTORIZADO
-    # Token leido directo de DynamoDB (sin invocar otra Lambda)
     item = boto3.resource('dynamodb').Table('t_tokens_acceso').get_item(Key={'token': token}).get('Item')
     if not item or datetime.now().strftime('%Y-%m-%d %H:%M:%S') > item['expires']:
         return NO_AUTORIZADO
